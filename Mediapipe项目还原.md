@@ -27,5 +27,5 @@
 
    注：mediapipe和OpenCV需使用python3环境，所以需要在电脑上先安装好python3，并在pycharm的环境中选择python3作为interpreter
 
-   ![preferences](/Users/sissiliu/Desktop/preferences.png)
+   ![preferences](https://github.com/SLiu2000/ROS-robot-movement-control-by-hand-tracking/blob/main/images/preferences.png)
 
