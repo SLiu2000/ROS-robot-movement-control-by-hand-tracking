@@ -37,10 +37,8 @@ def in_range(x : int, maximum : int, minimum : int) -> int:
         return maximum
     return x
 
-
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
-    # Initiate holistic model
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         while cap.isOpened():
             left_fist = False
@@ -97,10 +95,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             # Fist detection
             if valid and ((results.right_hand_landmarks is not None) and (results.left_hand_landmarks is not None)):
-                if distance(left_finger_x, left_finger_y, left_x, left_y) < 100:
+                if distance(left_finger_x, left_finger_y, left_x, left_y) < 55:
                     left_fist = True
-                if distance(right_finger_x, right_finger_y, right_x, right_y) < 100:
+                if distance(right_finger_x, right_finger_y, right_x, right_y) < 55:
                     right_fist = True
+
+                print(distance(left_finger_x, left_finger_y, left_x, left_y))
+                print(distance(right_finger_x, right_finger_y, right_x, right_y))
 
                 # Draw circles at hand locations
                 if valid:
@@ -153,12 +154,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 # right
                 cv2.rectangle(image, (int(locked_origin[2]), int(locked_origin[3])),
                               (int(last_valid_positions[2]), int(last_valid_positions[3])), (0, 0, 255), 3)
-                left_control = in_range(last_valid_positions[1] - locked_origin[1], MAX_CONTROL_PIXELS, MIN_CONTROL_PIXELS)
-                right_control = in_range(last_valid_positions[3] - locked_origin[3], MAX_CONTROL_PIXELS, MIN_CONTROL_PIXELS)
+                left_control = in_range(last_valid_positions[1] - locked_origin[1], MAX_CONTROL_PIXELS,
+                                        MIN_CONTROL_PIXELS)
+                right_control = in_range(last_valid_positions[3] - locked_origin[3], MAX_CONTROL_PIXELS,
+                                         MIN_CONTROL_PIXELS)
 
                 left_control = int((left_control / -MAX_CONTROL_PIXELS) * 10) / 10
-                right_control = int((right_control / -MAX_CONTROL_PIXELS) * 10) / 10
-
+                # right_control = int((right_control / -MAX_CONTROL_PIXELS) * 10) / 10
+                #
                 # Send updated information to server
                 s.sendall(bytes(str(left_control) + ',' + str(right_control), 'utf-8'))
 
